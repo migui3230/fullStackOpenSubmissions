@@ -26,6 +26,15 @@ const Statistics = ({ feedback }) => {
       (feedback.good - feedback.bad) /
       (feedback.good + feedback.neutral + feedback.bad),
   };
+
+  if (!feedback.good && !feedback.bad && !feedback.neutral) {
+    return (
+      <>
+        <h2>statistics</h2>
+        <p>No feedback given</p>
+      </>
+    );
+  }
   return (
     <>
       <h2>statistics</h2>
