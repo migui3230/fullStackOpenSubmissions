@@ -5,17 +5,21 @@ const Button = ({ handleClick, text }) => (
 );
 
 const StatisticLine = ({ text, value, symbol }) => {
+  // TODO: create the html table data in here
   if (symbol) {
     return (
-      <p>
-        {text} {value} {symbol}
-      </p>
+      <>
+        <td>{text}</td>
+        <td>{value}</td>
+        <td>{symbol}</td>
+      </>
     );
   }
   return (
-    <p>
-      {text} {value}
-    </p>
+    <>
+      <td>{text}</td>
+      <td>{value}</td>
+    </>
   );
 };
 
@@ -36,29 +40,38 @@ const Statistics = ({ feedback }) => {
     );
   }
   return (
+    // TODO: create the table and table rows in here
     <>
       <h2>statistics</h2>
-      <StatisticLine text="good" value={feedback.good} />
-      <StatisticLine text="neutral" value={feedback.neutral} />
-      <StatisticLine text="bad" value={feedback.bad} />
-      <StatisticLine text="all" value={calculations.getAllStatistics()} />
-      <StatisticLine text="average" value={calculations.getAverage()} />
-      <StatisticLine
-        text="positive"
-        value={(feedback.good / calculations.getAllStatistics()) * 100}
-        symbol={"%"}
-      />
+      <table>
+        <tr>
+          <StatisticLine text="good" value={feedback.good} />
+        </tr>
+        <tr>
+          <StatisticLine text="neutral" value={feedback.neutral} />
+        </tr>
+        <tr>
+          <StatisticLine text="bad" value={feedback.bad} />
+        </tr>
+        <tr>
+          <StatisticLine text="all" value={calculations.getAllStatistics()} />
+        </tr>
+        <tr>
+          <StatisticLine text="average" value={calculations.getAverage()} />
+        </tr>
+        <tr>
+          <StatisticLine
+            text="positive"
+            value={(feedback.good / calculations.getAllStatistics()) * 100}
+            symbol={"%"}
+          />
+        </tr>
+      </table>
     </>
   );
 };
 
 const App = () => {
-  // save clicks of each button to its own state
-
-  // TODO: turn all the useState variables into one object and refactor the calculated variables
-  // TODO: create one object for all the state and pass it as props to the child components
-  // TODO: find a way to pass in all calculations as a prop to the statistics object
-
   const [feedback, setFeedback] = useState({
     good: 0,
     neutral: 0,
