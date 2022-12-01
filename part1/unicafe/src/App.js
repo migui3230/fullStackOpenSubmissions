@@ -4,17 +4,17 @@ const Button = ({ handleClick, text }) => (
   <button onClick={handleClick}>{text}</button>
 );
 
-const Display = ({ text, number, symbol }) => {
+const StatisticLine = ({ text, value, symbol }) => {
   if (symbol) {
     return (
       <p>
-        {text} {number} {symbol}
+        {text} {value} {symbol}
       </p>
     );
   }
   return (
     <p>
-      {text} {number}
+      {text} {value}
     </p>
   );
 };
@@ -38,14 +38,14 @@ const Statistics = ({ feedback }) => {
   return (
     <>
       <h2>statistics</h2>
-      <Display text="good" number={feedback.good} />
-      <Display text="neutral" number={feedback.neutral} />
-      <Display text="bad" number={feedback.bad} />
-      <Display text="all" number={calculations.getAllStatistics()} />
-      <Display text="average" number={calculations.getAverage()} />
-      <Display
+      <StatisticLine text="good" value={feedback.good} />
+      <StatisticLine text="neutral" value={feedback.neutral} />
+      <StatisticLine text="bad" value={feedback.bad} />
+      <StatisticLine text="all" value={calculations.getAllStatistics()} />
+      <StatisticLine text="average" value={calculations.getAverage()} />
+      <StatisticLine
         text="positive"
-        number={(feedback.good / calculations.getAllStatistics()) * 100}
+        value={(feedback.good / calculations.getAllStatistics()) * 100}
         symbol={"%"}
       />
     </>
