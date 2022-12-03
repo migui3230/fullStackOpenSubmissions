@@ -1,7 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+const AnecdoteWithLargestVote = ({ points, anecdotes }) => {
+  // TODO: get index with most points in the points object
+  // TODO: display the anecdote and the amount of points for that anecdote
+  // TODO: use the useEffect hook to rerender whenever the max votes changes
+  const [biggestIndex, setBiggestIndex] = useState(0);
+
+  useEffect(() => {
+    const keys = Object.keys(points);
+    const largestKey = keys.reduce((a, b) => (points[a] > points[b] ? a : b));
+
+    setBiggestIndex(largestKey);
+  }, [biggestIndex, points]);
+
+  return (
+    <>
+      <h2>Anecdote with most votes</h2>
+      {anecdotes[biggestIndex]}
+      <p>has {points[biggestIndex]} votes</p>
+    </>
+  );
+};
 
 const App = () => {
-  // TODO: get how many votes that quote has from the object and display it in jsx
   const anecdotes = [
     "If it hurts, do it more often.",
     "Adding manpower to a late software project makes it later!",
@@ -29,10 +50,6 @@ const App = () => {
   };
 
   const voteForIndex = () => {
-    /* 
-    TODO: use the current selected index in incrementing in the object
-    TODO: create a new variable for the copied object, then increment the index that is needed, then use the setPoints hook
-    */
     const copyPoints = { ...points };
     copyPoints[selected] += 1;
     setPoints(copyPoints);
@@ -40,12 +57,17 @@ const App = () => {
 
   return (
     <>
+      <h2>Anecdote of the day</h2>
       {anecdotes[selected]}
       <p>has {points[selected]} votes</p>
+      <div>
+        <button onClick={voteForIndex}>vote</button>
+        <button onClick={setNewAnecdoteIndex}>next anecdote</button>
+      </div>
+
       <br />
 
-      <button onClick={voteForIndex}>vote</button>
-      <button onClick={setNewAnecdoteIndex}>next anecdote</button>
+      <AnecdoteWithLargestVote points={points} anecdotes={anecdotes} />
     </>
   );
 };
