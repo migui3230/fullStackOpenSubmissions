@@ -1,8 +1,7 @@
 import { useState } from "react";
 
 const App = () => {
-  // TODO: create a button for next anecdote
-  // TODO: create a function to get a random number for the selected state
+  // TODO: get how many votes that quote has from the object and display it in jsx
   const anecdotes = [
     "If it hurts, do it more often.",
     "Adding manpower to a late software project makes it later!",
@@ -14,18 +13,39 @@ const App = () => {
   ];
 
   const [selected, setSelected] = useState(0);
+  const [points, setPoints] = useState({
+    0: 0,
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+    6: 0,
+  });
 
-  const getNewAnecdoteIndex = () => {
+  const setNewAnecdoteIndex = () => {
     const randomIndex = Math.floor(Math.random() * anecdotes.length);
     setSelected(randomIndex);
+  };
+
+  const voteForIndex = () => {
+    /* 
+    TODO: use the current selected index in incrementing in the object
+    TODO: create a new variable for the copied object, then increment the index that is needed, then use the setPoints hook
+    */
+    const copyPoints = { ...points };
+    copyPoints[selected] += 1;
+    setPoints(copyPoints);
   };
 
   return (
     <>
       {anecdotes[selected]}
+      <p>has {points[selected]} votes</p>
       <br />
 
-      <button onClick={getNewAnecdoteIndex}>next anecdote</button>
+      <button onClick={voteForIndex}>vote</button>
+      <button onClick={setNewAnecdoteIndex}>next anecdote</button>
     </>
   );
 };
