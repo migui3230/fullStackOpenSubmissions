@@ -15,6 +15,7 @@ const StatisticLine = ({ text, value, symbol }) => {
       </>
     );
   }
+
   return (
     <>
       <td>{text}</td>
