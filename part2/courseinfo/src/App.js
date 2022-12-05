@@ -1,19 +1,20 @@
-// TODO: create a component called course that handles the rendering of the entire course object and the parts array
+import { useState } from "react";
 
 const Course = ({ course }) => {
-  // TODO: use the map method in order to go over the entire parts array, remember to give each item a key
-  // TODO; render the name property of the course object as an h2
+  // TODO: create a useState hook for the total amount of exercises
+  // TODO: set the state as we are mapping over the parts array
+
+  const sum = course.parts.reduce((total, part) => total + part.exercises, 0);
 
   return (
     <>
       <h2>{course.name}</h2>
-      <ul>
-        {course.parts.map((part) => (
-          <li key={part.id}>
-            {part.name} {part.exercises}
-          </li>
-        ))}
-      </ul>
+      {course.parts.map((part) => (
+        <p key={part.id}>
+          {part.name} {part.exercises}
+        </p>
+      ))}
+      <strong>total of {sum} exercises</strong>
     </>
   );
 };
@@ -37,6 +38,11 @@ const App = () => {
         name: "State of a component",
         exercises: 14,
         id: 3,
+      },
+      {
+        name: "Redux",
+        exercises: 11,
+        id: 4,
       },
     ],
   };
