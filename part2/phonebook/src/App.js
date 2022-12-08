@@ -4,12 +4,21 @@ const App = () => {
   const [persons, setPersons] = useState([{ name: "Arto Hellas" }]);
   const [newName, setNewName] = useState("");
 
+  // TODO: create an alert that takes in the newName state and displays a message if the newName is already in the persons array
+  // TODO: do validation for checking if the current newName variable is already in the persons array
+
   const handleNameChange = (e) => {
     setNewName(e.target.value);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const nameAlreadyExists = persons.find((person) => person.name === newName);
+    if (nameAlreadyExists) {
+      window.alert(`${newName} already exists in the phonebook.`);
+      return;
+    }
     e.target.value = "";
     setPersons(
       persons.concat({
