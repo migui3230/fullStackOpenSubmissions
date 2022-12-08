@@ -6,6 +6,17 @@ const App = () => {
   ]);
   const [newName, setNewName] = useState("");
   const [number, setNumber] = useState("");
+  const [filter, setFilter] = useState("");
+
+  const filteredData = persons.filter((person) =>
+    person.name.toLowerCase().includes(filter.toLowerCase())
+  );
+
+  const renderData = filteredData.length > 0 ? filteredData : persons;
+
+  const handleFilterChange = (e) => {
+    setFilter(e.target.value);
+  };
 
   const handleNameChange = (e) => {
     setNewName(e.target.value);
@@ -37,6 +48,14 @@ const App = () => {
   return (
     <>
       <h2>Phonebook</h2>
+      <form>
+        <div>
+          filter shown with{" "}
+          <input onChange={handleFilterChange} value={filter} />
+        </div>
+      </form>
+
+      <h2>add a new</h2>
       <form onSubmit={handleSubmit}>
         <div>
           name: <input value={newName} onChange={handleNameChange} />
@@ -49,12 +68,12 @@ const App = () => {
         </div>
       </form>
       <h2>Numbers</h2>
-      {persons.map((person) => (
-        <p>
-          {person.name} {person.number}
+      {renderData.map((data) => (
+        <p key={data.name}>
+          {data.name} {data.number}
         </p>
       ))}
-      <p>debug: {newName}</p>
+      <p>debug: {filter}</p>
     </>
   );
 };
