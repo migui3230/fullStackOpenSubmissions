@@ -1,14 +1,18 @@
 import { useState } from "react";
 
 const App = () => {
-  const [persons, setPersons] = useState([{ name: "Arto Hellas" }]);
+  const [persons, setPersons] = useState([
+    { name: "Arto Hellas", number: "040-1234567" },
+  ]);
   const [newName, setNewName] = useState("");
-
-  // TODO: create an alert that takes in the newName state and displays a message if the newName is already in the persons array
-  // TODO: do validation for checking if the current newName variable is already in the persons array
+  const [number, setNumber] = useState("");
 
   const handleNameChange = (e) => {
     setNewName(e.target.value);
+  };
+
+  const handleNumberChange = (e) => {
+    setNumber(e.target.value);
   };
 
   const handleSubmit = (e) => {
@@ -23,8 +27,10 @@ const App = () => {
     setPersons(
       persons.concat({
         name: newName,
+        number: number,
       })
     );
+    setNumber("");
     setNewName("");
   };
 
@@ -36,12 +42,17 @@ const App = () => {
           name: <input value={newName} onChange={handleNameChange} />
         </div>
         <div>
+          number: <input value={number} onChange={handleNumberChange} />
+        </div>
+        <div>
           <button type="submit">add</button>
         </div>
       </form>
       <h2>Numbers</h2>
       {persons.map((person) => (
-        <p>{person.name}</p>
+        <p>
+          {person.name} {person.number}
+        </p>
       ))}
       <p>debug: {newName}</p>
     </>
