@@ -18,7 +18,34 @@ const SearchForm = ({ value, changeHandler }) => {
   );
 };
 
-const SingleCountry = ({ searchTerm, searchHandler, countries }) => {
+const SingleCountry = ({
+  countries,
+  selectedCountry,
+  clearSelectedCountry,
+}) => {
+  if (selectedCountry) {
+    return (
+      <>
+        <button onClick={clearSelectedCountry}>
+          Go back to multiple countries
+        </button>
+        <h1>{selectedCountry.name.common}</h1>
+        <p>capital {selectedCountry.capital[0]}</p>
+        <p>area {selectedCountry.area}</p>
+        <h2>languages</h2>
+        <ul>
+          {Object.values(selectedCountry.languages).map((language) => {
+            return <li>{language}</li>;
+          })}
+        </ul>
+        <img
+          src={selectedCountry.flags["png"]}
+          alt={selectedCountry.name.common + " flag"}
+        />
+      </>
+    );
+  }
+
   return (
     <>
       <h1>{countries[0].name.common}</h1>
@@ -38,11 +65,31 @@ const SingleCountry = ({ searchTerm, searchHandler, countries }) => {
   );
 };
 
-const MultipleCountries = ({ searchTerm, searchHandler, countries }) => {
+const MultipleCountries = ({
+  countries,
+  setSelectedCountry,
+  selectedCountry,
+  clearSelectedCountry,
+}) => {
+  if (selectedCountry) {
+    return (
+      <SingleCountry
+        selectedCountry={selectedCountry}
+        countries={countries}
+        clearSelectedCountry={clearSelectedCountry}
+      />
+    );
+  }
+
   return (
     <>
       {countries.map((country) => {
-        return <p>{country.name.common}</p>;
+        return (
+          <>
+            <p key={country.name.common}>{country.name.common}</p>
+            <button onClick={() => setSelectedCountry(country)}>show</button>
+          </>
+        );
       })}
     </>
   );
@@ -51,11 +98,17 @@ const MultipleCountries = ({ searchTerm, searchHandler, countries }) => {
 const App = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [countries, setCountries] = useState([]);
-  console.log(countries[0]);
+  const [selectedCountry, setSelectedCountry] = useState(null);
+  // console.log(countries[0]);
   // console.log(searchTerm);
+  // console.log(selectedCountry);
 
   const searchHandler = (e) => {
     setSearchTerm(e.target.value);
+  };
+
+  const clearSelectedCountry = () => {
+    setSelectedCountry(null);
   };
 
   useEffect(() => {
@@ -67,30 +120,20 @@ const App = () => {
     });
   }, [searchTerm]);
 
-  // TODO: ask chatgpt, github copilot, and the react discord to find a way to make this code cleaner and more refactored
-
-  // TODO: refactor code from lines 44 to 98
-
-  // separate code into components for single country view, invalid size view, and multiple country view (create a prop boolean to show the show button for a single country view when pressed)
-
-  // TODO: render the default search form as the last thing after all the conditionals
   return (
     <>
       <SearchForm value={searchTerm} changeHandler={searchHandler} />
 
       {searchTerm && countries.length === 1 ? (
-        <SingleCountry
-          countries={countries}
-          searchHandler={searchHandler}
-          searchTerm={searchTerm}
-        />
+        <SingleCountry countries={countries} />
       ) : null}
 
       {searchTerm && countries.length > 1 && countries.length < 10 ? (
         <MultipleCountries
           countries={countries}
-          searchHandler={searchHandler}
-          searchTerm={searchTerm}
+          setSelectedCountry={setSelectedCountry}
+          selectedCountry={selectedCountry}
+          clearSelectedCountry={clearSelectedCountry}
         />
       ) : null}
 
