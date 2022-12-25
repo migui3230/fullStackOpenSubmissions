@@ -59,6 +59,7 @@ const Filter = ({ data, changeHandler }) => {
 
 const App = () => {
   const [persons, setPersons] = useState([]);
+  console.log(persons);
   const [newName, setNewName] = useState("");
   const [number, setNumber] = useState("");
   const [filter, setFilter] = useState("");
@@ -96,12 +97,20 @@ const App = () => {
       return;
     }
     e.target.value = "";
-    setPersons(
-      persons.concat({
-        name: newName,
-        number: number,
+    const newPerson = {
+      name: newName,
+      number: number,
+      id: persons[persons.length - 1].id + 1,
+    };
+    axios
+      .post("http://localhost:3001/persons", newPerson)
+      .then((response) => {
+        setPersons(persons.concat(newPerson));
       })
-    );
+      .catch((error) => {
+        console.error(error);
+      });
+
     setNumber("");
     setNewName("");
   };
