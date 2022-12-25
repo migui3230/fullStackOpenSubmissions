@@ -23,10 +23,39 @@ const SingleCountry = ({
   selectedCountry,
   clearSelectedCountry,
 }) => {
+  const [currentWeather, setCurrentWeather] = useState([]);
+  console.log(currentWeather);
+
+  const fetchWeatherData = async (country) => {
+    const options = {
+      method: "GET",
+      url: "https://weatherapi-com.p.rapidapi.com/current.json",
+      params: { q: country.capital[0] },
+      headers: {
+        "X-RapidAPI-Key": process.env.REACT_APP_API_KEY,
+        "X-RapidAPI-Host": process.env.REACT_APP_API_HOST,
+      },
+    };
+    const response = await axios.request(options);
+    setCurrentWeather(response.data);
+  };
+
+  useEffect(() => {
+    if (countries.length === 1 && !selectedCountry) {
+      fetchWeatherData(countries[0]);
+    } else if (selectedCountry) {
+      fetchWeatherData(selectedCountry);
+    }
+  }, [countries, selectedCountry]);
+
   if (selectedCountry) {
     return (
       <>
-        <button onClick={clearSelectedCountry}>
+        <button
+          onClick={() => {
+            clearSelectedCountry();
+          }}
+        >
           Go back to multiple countries
         </button>
         <h1>{selectedCountry.name.common}</h1>
@@ -42,6 +71,10 @@ const SingleCountry = ({
           src={selectedCountry.flags["png"]}
           alt={selectedCountry.name.common + " flag"}
         />
+        <h2>Weather in {currentWeather.location.name}</h2>
+        <p>temperature {currentWeather.current.temp_c} Celsius </p>
+        <img src={currentWeather.condition.icon} alt={"weather icon"} />
+        <p>wind {currentWeather.current.wind_mph} mph</p>
       </>
     );
   }
@@ -61,6 +94,10 @@ const SingleCountry = ({
         src={countries[0].flags["png"]}
         alt={countries[0].name.common + " flag"}
       />
+      <h2>Weather in {currentWeather.location.name}</h2>
+      <p>temperature {currentWeather.current.temp_c} Celsius </p>
+      <img src={currentWeather.condition.icon} alt={"weather icon"} />
+      <p>wind {currentWeather.current.wind_mph} mph</p>
     </>
   );
 };
@@ -87,7 +124,7 @@ const MultipleCountries = ({
         return (
           <>
             <p key={country.name.common}>{country.name.common}</p>
-            <button onClick={() => setSelectedCountry(country)}>show</button>
+            <button onClick={() => setSelectedCountry([country])}>show</button>
           </>
         );
       })}
@@ -98,10 +135,7 @@ const MultipleCountries = ({
 const App = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [countries, setCountries] = useState([]);
-  const [selectedCountry, setSelectedCountry] = useState(null);
-  // console.log(countries[0]);
-  // console.log(searchTerm);
-  // console.log(selectedCountry);
+  const [selectedCountry, setSelectedCountry] = useState([]);
 
   const searchHandler = (e) => {
     setSearchTerm(e.target.value);
