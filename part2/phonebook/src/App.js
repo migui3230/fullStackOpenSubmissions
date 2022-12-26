@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import databaseService from "./services/databaseService";
 
 const SinglePersonData = ({ id, name, number }) => {
   return (
@@ -11,12 +11,32 @@ const SinglePersonData = ({ id, name, number }) => {
   );
 };
 
-const RenderData = ({ displayData }) => {
+const RenderData = ({ displayData, persons, setPersons }) => {
+  const handleDeleteButton = (id, name) => {
+    const result = window.confirm(`Delete ${name}?`);
+    const removePerson = persons.find((p) => p.name === name);
+    const newPersonsArray = persons.filter((person) => person !== removePerson);
+
+    if (result) {
+      databaseService.deletePerson(id);
+      setPersons(newPersonsArray);
+    }
+  };
+
   return (
     <>
       <h2>Numbers</h2>
       {displayData.map((data) => (
-        <SinglePersonData id={data.id} name={data.name} number={data.number} />
+        <>
+          <SinglePersonData
+            id={data.id}
+            name={data.name}
+            number={data.number}
+          />
+          <button onClick={() => handleDeleteButton(data.id, data.name)}>
+            delete
+          </button>
+        </>
       ))}
     </>
   );
@@ -59,15 +79,20 @@ const Filter = ({ data, changeHandler }) => {
 
 const App = () => {
   const [persons, setPersons] = useState([]);
-  console.log(persons);
   const [newName, setNewName] = useState("");
   const [number, setNumber] = useState("");
   const [filter, setFilter] = useState("");
+  // console.log(persons);
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((response) => {
-      setPersons(response.data);
-    });
+    databaseService
+      .getAll()
+      .then((data) => {
+        setPersons(data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }, []);
 
   const filteredData = persons.filter((person) =>
@@ -91,20 +116,43 @@ const App = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const nameAlreadyExists = persons.find((person) => person.name === newName);
-    if (nameAlreadyExists) {
-      window.alert(`${newName} already exists in the phonebook.`);
-      return;
-    }
-    e.target.value = "";
+    const personAlreadyExists = persons.find(
+      (person) => person.name === newName
+    );
+
     const newPerson = {
       name: newName,
       number: number,
       id: persons[persons.length - 1].id + 1,
     };
-    axios
-      .post("http://localhost:3001/persons", newPerson)
-      .then((response) => {
+
+    if (personAlreadyExists) {
+      const result = window.confirm(
+        `${personAlreadyExists.name} is already added to phonebook, replace the old number with a new one?`
+      );
+      if (result) {
+        const updatedPerson = { ...personAlreadyExists, number: number };
+
+        // create the put request here with the person id and this new updatedPerson object
+        databaseService.updatePerson(personAlreadyExists.id, updatedPerson);
+
+        // set state for the new persons array
+        const newArray = persons.map((person) =>
+          person.name === updatedPerson.name ? updatedPerson : person
+        );
+
+        setPersons(newArray);
+
+        return;
+      } else {
+        return;
+      }
+    }
+    e.target.value = "";
+
+    databaseService
+      .create(newPerson)
+      .then((data) => {
         setPersons(persons.concat(newPerson));
       })
       .catch((error) => {
@@ -126,7 +174,11 @@ const App = () => {
         numberValue={number}
         submitHandler={handleSubmit}
       />
-      <RenderData displayData={renderData} />
+      <RenderData
+        displayData={renderData}
+        persons={persons}
+        setPersons={setPersons}
+      />
     </>
   );
 };
