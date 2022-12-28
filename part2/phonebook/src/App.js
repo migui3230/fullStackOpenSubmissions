@@ -4,8 +4,11 @@ import "./index.css";
 import RenderData from "./components/RenderData";
 import AddNewData from "./components/AddNewData";
 
-const AddedPerson = ({ name }) => {
-  // TODO: change this component to "updated {name}" when im updating a name with a new number, use a ternary operator here?
+const AddedPerson = ({ name, updatingNumber }) => {
+  // TODO: change this component to "updated {name}" when im updating a name with a new number, use a ternary operator here?\
+  if (updatingNumber) {
+    return <div className="added">Updated {name}</div>;
+  }
   return <div className="added">Added {name} </div>;
 };
 
@@ -19,8 +22,6 @@ const Filter = ({ data, changeHandler }) => {
   );
 };
 
-// TODO:  whenever i add or update the number of a person, show the added person component for a few seconds then make it disappear
-
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
@@ -28,6 +29,8 @@ const App = () => {
   const [filter, setFilter] = useState("");
   const [showAddedPerson, setShowAddedPerson] = useState(false);
   const [addedName, setAddedName] = useState("");
+  // should i use another state hook to show the "updated" text instead of being added? is there something better for this
+  const [updatingNumber, setUpdatingNumber] = useState(false);
 
   useEffect(() => {
     databaseService
@@ -78,6 +81,16 @@ const App = () => {
       if (result) {
         const updatedPerson = { ...personAlreadyExists, number: number };
 
+        setAddedName(newName);
+        setUpdatingNumber(true);
+
+        setShowAddedPerson(true);
+        setTimeout(() => {
+          setShowAddedPerson(false);
+          setAddedName("");
+          setUpdatingNumber(false);
+        }, 3000);
+
         // create the put request here with the person id and this new updatedPerson object
         databaseService.updatePerson(personAlreadyExists.id, updatedPerson);
 
@@ -118,7 +131,9 @@ const App = () => {
   return (
     <>
       <h2>Phonebook</h2>
-      {showAddedPerson && <AddedPerson name={addedName} />}
+      {showAddedPerson && (
+        <AddedPerson name={addedName} updatingNumber={updatingNumber} />
+      )}
       <Filter data={filter} changeHandler={handleFilterChange} />
       <AddNewData
         nameHandler={handleNameChange}
