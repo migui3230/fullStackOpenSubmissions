@@ -26,4 +26,4 @@ const updatePerson = (id, newObject) => {
   return request.then((response) => response.data);
 };
 
-export default { getAll, create, deletePerson, updatePerson };
+export default { updatePerson, getAll, create, deletePerson };

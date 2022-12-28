@@ -1,70 +1,12 @@
 import { useState, useEffect } from "react";
 import databaseService from "./services/databaseService";
+import "./index.css";
+import RenderData from "./components/RenderData";
+import AddNewData from "./components/AddNewData";
 
-const SinglePersonData = ({ id, name, number }) => {
-  return (
-    <>
-      <p key={id}>
-        {name} {number}
-      </p>
-    </>
-  );
-};
-
-const RenderData = ({ displayData, persons, setPersons }) => {
-  const handleDeleteButton = (id, name) => {
-    const result = window.confirm(`Delete ${name}?`);
-    const removePerson = persons.find((p) => p.name === name);
-    const newPersonsArray = persons.filter((person) => person !== removePerson);
-
-    if (result) {
-      databaseService.deletePerson(id);
-      setPersons(newPersonsArray);
-    }
-  };
-
-  return (
-    <>
-      <h2>Numbers</h2>
-      {displayData.map((data) => (
-        <>
-          <SinglePersonData
-            id={data.id}
-            name={data.name}
-            number={data.number}
-          />
-          <button onClick={() => handleDeleteButton(data.id, data.name)}>
-            delete
-          </button>
-        </>
-      ))}
-    </>
-  );
-};
-
-const AddNewData = ({
-  submitHandler,
-  nameValue,
-  numberValue,
-  nameHandler,
-  numberHandler,
-}) => {
-  return (
-    <>
-      <h2>add a new</h2>
-      <form onSubmit={submitHandler}>
-        <div>
-          name: <input value={nameValue} onChange={nameHandler} />
-        </div>
-        <div>
-          number: <input value={numberValue} onChange={numberHandler} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
-    </>
-  );
+const AddedPerson = ({ name }) => {
+  // TODO: change this component to "updated {name}" when im updating a name with a new number, use a ternary operator here?
+  return <div className="added">Added {name} </div>;
 };
 
 const Filter = ({ data, changeHandler }) => {
@@ -77,12 +19,15 @@ const Filter = ({ data, changeHandler }) => {
   );
 };
 
+// TODO:  whenever i add or update the number of a person, show the added person component for a few seconds then make it disappear
+
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [number, setNumber] = useState("");
   const [filter, setFilter] = useState("");
-  // console.log(persons);
+  const [showAddedPerson, setShowAddedPerson] = useState(false);
+  const [addedName, setAddedName] = useState("");
 
   useEffect(() => {
     databaseService
@@ -149,7 +94,13 @@ const App = () => {
       }
     }
     e.target.value = "";
+    setAddedName(newName);
 
+    setShowAddedPerson(true);
+    setTimeout(() => {
+      setShowAddedPerson(false);
+      setAddedName("");
+    }, 3000);
     databaseService
       .create(newPerson)
       .then((data) => {
@@ -163,9 +114,11 @@ const App = () => {
     setNewName("");
   };
 
+  // TODO: do this part for the updated name too
   return (
     <>
       <h2>Phonebook</h2>
+      {showAddedPerson && <AddedPerson name={addedName} />}
       <Filter data={filter} changeHandler={handleFilterChange} />
       <AddNewData
         nameHandler={handleNameChange}
