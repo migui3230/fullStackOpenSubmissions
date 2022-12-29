@@ -18,8 +18,6 @@ const deletePerson = (id) => {
   return request.then((response) => response.data);
 };
 
-// TODO: create the put request function, parameters are id and a new object to create
-
 const updatePerson = (id, newObject) => {
   const putUrl = baseUrl + "/" + id;
   const request = axios.put(putUrl, newObject);

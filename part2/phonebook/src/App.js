@@ -3,9 +3,10 @@ import databaseService from "./services/databaseService";
 import "./index.css";
 import RenderData from "./components/RenderData";
 import AddNewData from "./components/AddNewData";
+import DeletedPerson from "./components/DeletedPerson";
 
+// TODO: create a component that renders the name of what you are trying to delete, make sure to pass that name in as props
 const AddedPerson = ({ name, updatingNumber }) => {
-  // TODO: change this component to "updated {name}" when im updating a name with a new number, use a ternary operator here?\
   if (updatingNumber) {
     return <div className="added">Updated {name}</div>;
   }
@@ -29,8 +30,9 @@ const App = () => {
   const [filter, setFilter] = useState("");
   const [showAddedPerson, setShowAddedPerson] = useState(false);
   const [addedName, setAddedName] = useState("");
-  // should i use another state hook to show the "updated" text instead of being added? is there something better for this
   const [updatingNumber, setUpdatingNumber] = useState(false);
+  const [showDeletedPerson, setShowDeletedPerson] = useState(false);
+  const [deletedPerson, setDeletedPerson] = useState("");
 
   useEffect(() => {
     databaseService
@@ -127,10 +129,11 @@ const App = () => {
     setNewName("");
   };
 
-  // TODO: do this part for the updated name too
   return (
     <>
       <h2>Phonebook</h2>
+      {/* <DeletedPerson name="test" /> */}
+      {showDeletedPerson && <DeletedPerson name={deletedPerson} />}
       {showAddedPerson && (
         <AddedPerson name={addedName} updatingNumber={updatingNumber} />
       )}
@@ -146,6 +149,8 @@ const App = () => {
         displayData={renderData}
         persons={persons}
         setPersons={setPersons}
+        setDeletedPerson={setDeletedPerson}
+        setShowDeletedPerson={setShowDeletedPerson}
       />
     </>
   );
