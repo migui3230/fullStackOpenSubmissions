@@ -33,6 +33,15 @@ app.get("/api/persons", (req, res) => {
   return res.json(entries);
 });
 
-console.log(`Express app on port ${PORT}`);
+app.get("/info", (req, res) => {
+  const entriesLength = entries.length;
+  const currentDate = new Date();
+  res.send(`<p>Phonebook has info for ${entriesLength} people</p>
+  ${currentDate}`);
+  // return html of the phonebook info
+  // return html of the date
+});
 
-app.listen(PORT);
+app.listen(PORT, () => {
+  console.log(`Express app on port ${PORT}`);
+});
