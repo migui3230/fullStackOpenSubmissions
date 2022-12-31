@@ -50,6 +50,12 @@ app.get("/info", (req, res) => {
   ${currentDate}`);
 });
 
+app.delete("/api/persons/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const person = entries.filter((p) => p.id !== id);
+  return res.sendStatus(204);
+});
+
 app.listen(PORT, () => {
   console.log(`Express app on port ${PORT}`);
 });
