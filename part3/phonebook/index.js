@@ -1,11 +1,14 @@
 const express = require("express");
+const bodyParser = require("body-parser");
 const app = express();
+
+app.use(bodyParser.json());
 
 // TODO: set the port for the express app
 
 const PORT = 3001;
 
-const entries = [
+let entries = [
   {
     id: 1,
     name: "Arto Hellas",
@@ -54,6 +57,20 @@ app.delete("/api/persons/:id", (req, res) => {
   const id = Number(req.params.id);
   const person = entries.filter((p) => p.id !== id);
   return res.sendStatus(204);
+});
+
+app.post("/api/persons", (req, res) => {
+  const body = req.body;
+  const maxId = entries.length > 0 ? Math.max(...entries.map((p) => p.id)) : 0;
+
+  const person = {
+    id: maxId + 1,
+    name: body.name,
+    number: body.number,
+  };
+
+  entries = entries.concat(person);
+  res.json(person);
 });
 
 app.listen(PORT, () => {
