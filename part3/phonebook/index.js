@@ -60,13 +60,33 @@ app.delete("/api/persons/:id", (req, res) => {
 });
 
 app.post("/api/persons", (req, res) => {
-  const body = req.body;
   const maxId = entries.length > 0 ? Math.max(...entries.map((p) => p.id)) : 0;
+  const { name, number } = req.body;
+
+  const personAlreadyExists = entries.find((person) => person.name === name);
+
+  if (!name) {
+    res.status(400).send({
+      error: "Name is required",
+    });
+  }
+
+  if (!number) {
+    res.status(400).send({
+      error: "Number is required",
+    });
+  }
+
+  if (personAlreadyExists) {
+    res.status(400).send({
+      error: "Name must be unique",
+    });
+  }
 
   const person = {
     id: maxId + 1,
-    name: body.name,
-    number: body.number,
+    name: name,
+    number: number,
   };
 
   entries = entries.concat(person);
