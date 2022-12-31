@@ -33,13 +33,21 @@ app.get("/api/persons", (req, res) => {
   return res.json(entries);
 });
 
+app.get("/api/persons/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const neededPerson = entries.filter((person) => person.id === id);
+  console.log(neededPerson);
+  if (neededPerson.length === 0) {
+    return res.sendStatus(404);
+  }
+  res.json(neededPerson);
+});
+
 app.get("/info", (req, res) => {
   const entriesLength = entries.length;
   const currentDate = new Date();
   res.send(`<p>Phonebook has info for ${entriesLength} people</p>
   ${currentDate}`);
-  // return html of the phonebook info
-  // return html of the date
 });
 
 app.listen(PORT, () => {
