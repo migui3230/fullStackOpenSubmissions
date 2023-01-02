@@ -22,8 +22,6 @@ app.use(morgan("tiny"));
 app.use(morgan(logBody));
 app.use(cors());
 
-const PORT = 3001;
-
 let entries = [
   {
     id: 1,
@@ -61,6 +59,7 @@ app.get("/api/persons/:id", (req, res) => {
   res.json(neededPerson);
 });
 
+// TODO: double check if this works
 app.get("/info", (req, res) => {
   const entriesLength = entries.length;
   const currentDate = new Date();
@@ -107,6 +106,8 @@ app.post("/api/persons", (req, res) => {
   entries = entries.concat(person);
   res.json(person);
 });
+
+const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
   console.log(`Express app on port ${PORT}`);
