@@ -131,6 +131,7 @@ const App = () => {
   return (
     <>
       <h2>Phonebook</h2>
+      {/* <DeletedPerson name="test" /> */}
       {showDeletedPerson && <DeletedPerson name={deletedPerson} />}
       {showAddedPerson && (
         <AddedPerson name={addedName} updatingNumber={updatingNumber} />
