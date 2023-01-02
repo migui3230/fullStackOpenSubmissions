@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
+const cors = require("cors");
 
 const app = express();
 const logBody = (tokens, req, res) => {
@@ -19,8 +20,7 @@ const logBody = (tokens, req, res) => {
 app.use(bodyParser.json());
 app.use(morgan("tiny"));
 app.use(morgan(logBody));
-
-// TODO: set the port for the express app
+app.use(cors());
 
 const PORT = 3001;
 
@@ -48,7 +48,6 @@ let entries = [
 ];
 
 app.get("/api/persons", (req, res) => {
-  // return the entries variable as json
   return res.json(entries);
 });
 
@@ -71,7 +70,7 @@ app.get("/info", (req, res) => {
 
 app.delete("/api/persons/:id", (req, res) => {
   const id = Number(req.params.id);
-  const person = entries.filter((p) => p.id !== id);
+  entries = entries.filter((p) => p.id !== id);
   return res.sendStatus(204);
 });
 
