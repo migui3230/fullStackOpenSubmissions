@@ -93,11 +93,10 @@ app.delete("/api/persons/:id", (req, res) => {
   return res.sendStatus(204);
 });
 
-app.post("/api/persons", (req, res) => {
-  const maxId = entries.length > 0 ? Math.max(...entries.map((p) => p.id)) : 0;
+app.post("/api/persons", async (req, res) => {
   const { name, number } = req.body;
 
-  const personAlreadyExists = entries.find((person) => person.name === name);
+  // const personAlreadyExists = await Person.findOne({ name: name });
 
   if (!name) {
     res.status(400).send({
@@ -111,19 +110,20 @@ app.post("/api/persons", (req, res) => {
     });
   }
 
-  if (personAlreadyExists) {
-    res.status(400).send({
-      error: "Name must be unique",
-    });
-  }
+  // if (personAlreadyExists) {
+  //   res.status(400).send({
+  //     error: "Name must be unique",
+  //   });
+  // }
 
   const person = {
-    id: maxId + 1,
     name: name,
     number: number,
   };
 
-  entries = entries.concat(person);
+  const newPerson = new Person(person);
+  await newPerson.save();
+
   res.json(person);
 });
 
