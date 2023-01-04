@@ -20,11 +20,17 @@ const logBody = (tokens, req, res) => {
   ].join(" ");
 };
 
+const errorHandler = (err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Something went wrong!");
+};
+
 app.use(bodyParser.json());
 app.use(morgan("tiny"));
 app.use(morgan(logBody));
 app.use(cors());
 app.use(express.static("build"));
+app.use(errorHandler);
 mongoose.set("strictQuery", true);
 
 let entries = [
@@ -50,16 +56,16 @@ let entries = [
   },
 ];
 
-app.get("/api/persons", async (req, res) => {
+app.get("/api/persons", async (req, res, next) => {
   try {
     const persons = await Person.find({});
     res.json(persons);
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 });
 
-app.get("/api/persons/:id", async (req, res) => {
+app.get("/api/persons/:id", async (req, res, next) => {
   try {
     await mongoose.connect(process.env.MONGODB_URL);
     console.log("connected to mongo");
@@ -68,14 +74,14 @@ app.get("/api/persons/:id", async (req, res) => {
     const person = await Person.findOne({ _id: objectId });
     res.json(person);
   } catch (error) {
-    console.log(error);
+    next(error);
   } finally {
     await mongoose.connection.close();
     console.log("connection closed");
   }
 });
 
-app.get("/info", async (req, res) => {
+app.get("/info", async (req, res, next) => {
   try {
     const persons = await Person.find({});
     const personsLength = persons.length;
@@ -83,11 +89,11 @@ app.get("/info", async (req, res) => {
     res.send(`<p>Phonebook has info for ${personsLength} people</p>
   ${currentDate}`);
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 });
 
-app.delete("/api/persons/:id", async (req, res) => {
+app.delete("/api/persons/:id", async (req, res, next) => {
   // TODO: use find by id and remove function here
   // TODO: remember to use the object id
   try {
@@ -96,7 +102,7 @@ app.delete("/api/persons/:id", async (req, res) => {
     await Person.deleteOne({ _id: objectId });
     res.status(204).end();
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 });
 
