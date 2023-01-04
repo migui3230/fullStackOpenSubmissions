@@ -2,7 +2,7 @@ const SinglePersonData = ({ id, name, number }) => {
   return (
     <>
       <p key={id}>
-        {name} {number}
+        {id} {name} {number}
       </p>
     </>
   );

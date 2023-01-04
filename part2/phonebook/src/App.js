@@ -22,6 +22,7 @@ const Filter = ({ data, changeHandler }) => {
   );
 };
 
+// TODO: make the mongodb object id also render in the application, then use that to make api calls to delete the specific person
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
@@ -72,7 +73,7 @@ const App = () => {
     const newPerson = {
       name: newName,
       number: number,
-      id: persons[persons.length - 1].id + 1,
+      id: null,
     };
 
     if (personAlreadyExists) {
@@ -118,6 +119,7 @@ const App = () => {
     databaseService
       .create(newPerson)
       .then((data) => {
+        newPerson.id = data._id;
         setPersons(persons.concat(newPerson));
       })
       .catch((error) => {

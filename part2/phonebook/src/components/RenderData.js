@@ -32,11 +32,11 @@ const RenderData = ({
       {displayData.map((data) => (
         <>
           <SinglePersonData
-            id={data.id}
+            id={data._id}
             name={data.name}
             number={data.number}
           />
-          <button onClick={() => handleDeleteButton(data.id, data.name)}>
+          <button onClick={() => handleDeleteButton(data._id, data.name)}>
             delete
           </button>
         </>
