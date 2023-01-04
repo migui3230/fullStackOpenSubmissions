@@ -33,29 +33,6 @@ app.use(express.static("build"));
 app.use(errorHandler);
 mongoose.set("strictQuery", true);
 
-let entries = [
-  {
-    id: 1,
-    name: "Arto Hellas",
-    number: "040-123456",
-  },
-  {
-    id: 2,
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-  },
-  {
-    id: 3,
-    name: "Dan Abramov",
-    number: "12-43-234345",
-  },
-  {
-    id: 4,
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-  },
-];
-
 app.get("/api/persons", async (req, res, next) => {
   try {
     const persons = await Person.find({});
@@ -67,17 +44,29 @@ app.get("/api/persons", async (req, res, next) => {
 
 app.get("/api/persons/:id", async (req, res, next) => {
   try {
-    await mongoose.connect(process.env.MONGODB_URL);
-    console.log("connected to mongo");
     const id = req.params.id;
     const objectId = mongoose.Types.ObjectId(id);
     const person = await Person.findOne({ _id: objectId });
     res.json(person);
   } catch (error) {
     next(error);
-  } finally {
-    await mongoose.connection.close();
-    console.log("connection closed");
+  }
+});
+
+app.put("/api/persons/:id", async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const objectId = mongoose.Types.ObjectId(id);
+    const person = await Person.findOneAndUpdate(
+      {
+        _id: objectId,
+      },
+      req.body,
+      { new: true }
+    );
+    res.json(person);
+  } catch (error) {
+    next(error);
   }
 });
 
@@ -94,8 +83,6 @@ app.get("/info", async (req, res, next) => {
 });
 
 app.delete("/api/persons/:id", async (req, res, next) => {
-  // TODO: use find by id and remove function here
-  // TODO: remember to use the object id
   try {
     const id = req.params.id;
     const objectId = mongoose.Types.ObjectId(id);

@@ -94,7 +94,7 @@ const App = () => {
         }, 3000);
 
         // create the put request here with the person id and this new updatedPerson object
-        databaseService.updatePerson(personAlreadyExists.id, updatedPerson);
+        databaseService.updatePerson(personAlreadyExists._id, updatedPerson);
 
         // set state for the new persons array
         const newArray = persons.map((person) =>
