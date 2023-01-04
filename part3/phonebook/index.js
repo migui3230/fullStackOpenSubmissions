@@ -1,7 +1,10 @@
+require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const cors = require("cors");
+const mongoose = require("mongoose");
+const Person = require("./models/person");
 
 const app = express();
 const logBody = (tokens, req, res) => {
@@ -22,6 +25,7 @@ app.use(morgan("tiny"));
 app.use(morgan(logBody));
 app.use(cors());
 app.use(express.static("build"));
+mongoose.set("strictQuery", true);
 
 let entries = [
   {
@@ -46,26 +50,41 @@ let entries = [
   },
 ];
 
-app.get("/api/persons", (req, res) => {
-  return res.json(entries);
-});
-
-app.get("/api/persons/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const neededPerson = entries.filter((person) => person.id === id);
-  console.log(neededPerson);
-  if (neededPerson.length === 0) {
-    return res.sendStatus(404);
+app.get("/api/persons", async (req, res) => {
+  try {
+    const persons = await Person.find({});
+    res.json(persons);
+  } catch (error) {
+    console.log(error);
   }
-  res.json(neededPerson);
 });
 
-// TODO: double check if this works
-app.get("/info", (req, res) => {
-  const entriesLength = entries.length;
-  const currentDate = new Date();
-  res.send(`<p>Phonebook has info for ${entriesLength} people</p>
+app.get("/api/persons/:id", async (req, res) => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URL);
+    console.log("connected to mongo");
+    const id = req.params.id;
+    const objectId = mongoose.Types.ObjectId(id);
+    const person = await Person.findOne({ _id: objectId });
+    res.json(person);
+  } catch (error) {
+    console.log(error);
+  } finally {
+    await mongoose.connection.close();
+    console.log("connection closed");
+  }
+});
+
+app.get("/info", async (req, res) => {
+  try {
+    const persons = await Person.find({});
+    const personsLength = persons.length;
+    const currentDate = new Date();
+    res.send(`<p>Phonebook has info for ${personsLength} people</p>
   ${currentDate}`);
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 app.delete("/api/persons/:id", (req, res) => {

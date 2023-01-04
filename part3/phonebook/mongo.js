@@ -1,10 +1,5 @@
 const mongoose = require("mongoose");
 
-const password = process.argv[2];
-const name = process.argv[3]; // TODO: make this a string
-const number = process.argv[4]; // TODO: make this a string
-console.log(process.argv.length);
-
 const Person = mongoose.model("Person", {
   name: String,
   number: String,
@@ -30,9 +25,7 @@ const saveEntryInDB = async () => {
 
 const showAllEntries = async () => {
   try {
-    await mongoose.connect(
-      `mongodb+srv://migui0323:${password}@cluster0.iu8kym5.mongodb.net/?retryWrites=true&w=majority`
-    );
+    await mongoose.connect();
     const persons = await Person.find({});
     console.log("phonebook:");
     persons.forEach((person) => {
