@@ -87,10 +87,17 @@ app.get("/info", async (req, res) => {
   }
 });
 
-app.delete("/api/persons/:id", (req, res) => {
-  const id = Number(req.params.id);
-  entries = entries.filter((p) => p.id !== id);
-  return res.sendStatus(204);
+app.delete("/api/persons/:id", async (req, res) => {
+  // TODO: use find by id and remove function here
+  // TODO: remember to use the object id
+  try {
+    const id = req.params.id;
+    const objectId = mongoose.Types.ObjectId(id);
+    await Person.deleteOne({ _id: objectId });
+    res.status(204).end();
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 app.post("/api/persons", async (req, res) => {
