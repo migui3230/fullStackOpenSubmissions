@@ -4,6 +4,14 @@ const url = process.env.MONGODB_URL;
 
 mongoose.set("strictQuery", true);
 
+const validatePhoneNumber = (value) => {
+  const regex = /^\d{2,3}-\d+$/;
+  if (!regex.test(value)) {
+    throw new Error("Invalid phone number");
+  }
+  return true;
+};
+
 mongoose
   .connect(url)
   .then((result) => {
@@ -25,7 +33,9 @@ const personSchema = new mongoose.Schema({
   },
   number: {
     type: String,
+    minLength: 8,
     required: true,
+    validate: [validatePhoneNumber, "Invalid phone number"],
   },
 });
 

@@ -54,11 +54,18 @@ app.get("/api/persons/:id", async (req, res, next) => {
   }
 });
 
-// TODO: make sure to run validation in this endpoint too
 app.put("/api/persons/:id", async (req, res, next) => {
   try {
     const id = req.params.id;
     const objectId = mongoose.Types.ObjectId(id);
+    const personAlreadyExists = await Person.findOne({ _id: objectId });
+    if (personAlreadyExists) {
+      res.status(409).send({
+        error: "Name must be unique",
+      });
+      return;
+    }
+
     const person = await Person.findOneAndUpdate(
       {
         _id: objectId,
@@ -103,25 +110,29 @@ app.post("/api/persons", async (req, res, next) => {
   try {
     const { name, number } = req.body;
 
-    // const personAlreadyExists = await Person.findOne({ name: name });
+    const personAlreadyExists = await Person.findOne({ name: name });
+    console.log(personAlreadyExists);
 
     if (!name) {
       res.status(400).send({
         error: "Name is required",
       });
+      return;
     }
 
     if (!number) {
       res.status(400).send({
         error: "Number is required",
       });
+      return;
     }
 
-    // if (personAlreadyExists) {
-    //   res.status(400).send({
-    //     error: "Name must be unique",
-    //   });
-    // }
+    if (personAlreadyExists) {
+      res.status(409).send({
+        error: "Name must be unique",
+      });
+      return;
+    }
 
     const person = {
       name: name,
@@ -134,9 +145,6 @@ app.post("/api/persons", async (req, res, next) => {
     res.json(person);
   } catch (error) {
     console.log(error);
-    res.status(400).send({
-      error: error,
-    });
     next(error);
   }
 });

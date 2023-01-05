@@ -100,6 +100,10 @@ const App = () => {
             .then(console.log("success"))
             .catch((error) => {
               setError(error);
+
+              setTimeout(() => {
+                setError(null);
+              }, 3000);
             });
 
           // set state for the new persons array
@@ -131,6 +135,10 @@ const App = () => {
       setNewName("");
     } catch (error) {
       setError(error);
+
+      setTimeout(() => {
+        setError(null);
+      }, 3000);
     }
   };
 
