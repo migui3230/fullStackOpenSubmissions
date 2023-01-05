@@ -22,7 +22,6 @@ const Filter = ({ data, changeHandler }) => {
   );
 };
 
-// TODO: make the mongodb object id also render in the application, then use that to make api calls to delete the specific person
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
@@ -33,6 +32,7 @@ const App = () => {
   const [updatingNumber, setUpdatingNumber] = useState(false);
   const [showDeletedPerson, setShowDeletedPerson] = useState(false);
   const [deletedPerson, setDeletedPerson] = useState("");
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     databaseService
@@ -63,79 +63,84 @@ const App = () => {
     setNumber(e.target.value);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+    try {
+      e.preventDefault();
 
-    const personAlreadyExists = persons.find(
-      (person) => person.name === newName
-    );
-
-    const newPerson = {
-      name: newName,
-      number: number,
-      id: null,
-    };
-
-    if (personAlreadyExists) {
-      const result = window.confirm(
-        `${personAlreadyExists.name} is already added to phonebook, replace the old number with a new one?`
+      const personAlreadyExists = persons.find(
+        (person) => person.name === newName
       );
-      if (result) {
-        const updatedPerson = { ...personAlreadyExists, number: number };
 
-        setAddedName(newName);
-        setUpdatingNumber(true);
+      const newPerson = {
+        name: newName,
+        number: number,
+        id: null,
+      };
 
-        setShowAddedPerson(true);
-        setTimeout(() => {
-          setShowAddedPerson(false);
-          setAddedName("");
-          setUpdatingNumber(false);
-        }, 3000);
-
-        // create the put request here with the person id and this new updatedPerson object
-        databaseService.updatePerson(personAlreadyExists._id, updatedPerson);
-
-        // set state for the new persons array
-        const newArray = persons.map((person) =>
-          person.name === updatedPerson.name ? updatedPerson : person
+      if (personAlreadyExists) {
+        const result = window.confirm(
+          `${personAlreadyExists.name} is already added to phonebook, replace the old number with a new one?`
         );
+        if (result) {
+          const updatedPerson = { ...personAlreadyExists, number: number };
 
-        setPersons(newArray);
+          setAddedName(newName);
+          setUpdatingNumber(true);
 
-        return;
-      } else {
-        return;
+          setShowAddedPerson(true);
+          setTimeout(() => {
+            setShowAddedPerson(false);
+            setAddedName("");
+            setUpdatingNumber(false);
+          }, 3000);
+
+          // create the put request here with the person id and this new updatedPerson object
+          await databaseService
+            .updatePerson(personAlreadyExists._id, updatedPerson)
+            .then(console.log("success"))
+            .catch((error) => {
+              setError(error);
+            });
+
+          // set state for the new persons array
+          const newArray = persons.map((person) =>
+            person.name === updatedPerson.name ? updatedPerson : person
+          );
+
+          setPersons(newArray);
+
+          return;
+        } else {
+          return;
+        }
       }
-    }
-    e.target.value = "";
-    setAddedName(newName);
+      e.target.value = "";
+      setAddedName(newName);
 
-    setShowAddedPerson(true);
-    setTimeout(() => {
-      setShowAddedPerson(false);
-      setAddedName("");
-    }, 3000);
-    databaseService
-      .create(newPerson)
-      .then((data) => {
+      setShowAddedPerson(true);
+      setTimeout(() => {
+        setShowAddedPerson(false);
+        setAddedName("");
+      }, 3000);
+      await databaseService.create(newPerson).then((data) => {
         newPerson.id = data._id;
         setPersons(persons.concat(newPerson));
-      })
-      .catch((error) => {
-        console.error(error);
       });
 
-    setNumber("");
-    setNewName("");
+      setNumber("");
+      setNewName("");
+    } catch (error) {
+      setError(error);
+    }
   };
 
   return (
     <>
       <h2>Phonebook</h2>
       {/* <DeletedPerson name="test" /> */}
+      {error ? <p className="deleted"> {error.message} </p> : null}
       {showDeletedPerson && <DeletedPerson name={deletedPerson} />}
-      {showAddedPerson && (
+      {showAddedPerson && !error && (
         <AddedPerson name={addedName} updatingNumber={updatingNumber} />
       )}
       <Filter data={filter} changeHandler={handleFilterChange} />

@@ -5,6 +5,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const Person = require("./models/person");
+const { response } = require("express");
 
 const app = express();
 const logBody = (tokens, req, res) => {
@@ -53,7 +54,7 @@ app.get("/api/persons/:id", async (req, res, next) => {
   }
 });
 
-// finished
+// TODO: make sure to run validation in this endpoint too
 app.put("/api/persons/:id", async (req, res, next) => {
   try {
     const id = req.params.id;
@@ -63,10 +64,14 @@ app.put("/api/persons/:id", async (req, res, next) => {
         _id: objectId,
       },
       req.body,
-      { new: true }
+      { new: true, runValidators: true }
     );
     res.json(person);
   } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      error: error,
+    });
     next(error);
   }
 });
@@ -94,38 +99,46 @@ app.delete("/api/persons/:id", async (req, res, next) => {
   }
 });
 
-app.post("/api/persons", async (req, res) => {
-  const { name, number } = req.body;
+app.post("/api/persons", async (req, res, next) => {
+  try {
+    const { name, number } = req.body;
 
-  // const personAlreadyExists = await Person.findOne({ name: name });
+    // const personAlreadyExists = await Person.findOne({ name: name });
 
-  if (!name) {
+    if (!name) {
+      res.status(400).send({
+        error: "Name is required",
+      });
+    }
+
+    if (!number) {
+      res.status(400).send({
+        error: "Number is required",
+      });
+    }
+
+    // if (personAlreadyExists) {
+    //   res.status(400).send({
+    //     error: "Name must be unique",
+    //   });
+    // }
+
+    const person = {
+      name: name,
+      number: number,
+    };
+
+    const newPerson = new Person(person);
+    await newPerson.save();
+
+    res.json(person);
+  } catch (error) {
+    console.log(error);
     res.status(400).send({
-      error: "Name is required",
+      error: error,
     });
+    next(error);
   }
-
-  if (!number) {
-    res.status(400).send({
-      error: "Number is required",
-    });
-  }
-
-  // if (personAlreadyExists) {
-  //   res.status(400).send({
-  //     error: "Name must be unique",
-  //   });
-  // }
-
-  const person = {
-    name: name,
-    number: number,
-  };
-
-  const newPerson = new Person(person);
-  await newPerson.save();
-
-  res.json(person);
 });
 
 const PORT = process.env.PORT || 3001;
