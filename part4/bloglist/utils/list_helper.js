@@ -19,10 +19,6 @@ const favoriteBlog = (blogs) => {
 };
 
 const mostBlogs = (blogs) => {
-  // TODO: write case for multiple blogs
-  // TODO: write case for one blog
-  // TODO: write case for authors with same amount of blogs
-
   if (blogs.length === 0) {
     return null;
   }
@@ -39,9 +35,28 @@ const mostBlogs = (blogs) => {
   return topAuthor;
 };
 
+const mostLikes = (blogs) => {
+  if (blogs.length === 0) {
+    return null;
+  }
+
+  let topBlog = blogs[0];
+
+  blogs.reduce((prev, curr) => {
+    if (curr.likes > prev.likes) {
+      topBlog = curr;
+    }
+
+    return topBlog;
+  }, topBlog);
+
+  return topBlog;
+};
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
   mostBlogs,
+  mostLikes,
 };
