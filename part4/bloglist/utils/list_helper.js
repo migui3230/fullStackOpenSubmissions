@@ -2,8 +2,7 @@ const dummy = (blogs) => {
   return 1;
 };
 
-// TODO: change this function to parse through the array of blog objects instead
-const totalLike = (blogs) => {
+const totalLikes = (blogs) => {
   if (blogs.length === 0) {
     return 0;
   }
@@ -11,7 +10,16 @@ const totalLike = (blogs) => {
   return blogs.reduce((total, blog) => total + blog.likes, 0);
 };
 
+const favoriteBlog = (blogs) => {
+  if (blogs.length === 0) {
+    return null;
+  }
+
+  return blogs.reduce((prev, curr) => (prev.likes > curr.likes ? prev : curr));
+};
+
 module.exports = {
   dummy,
-  totalLike,
+  totalLikes,
+  favoriteBlog,
 };

@@ -1,5 +1,6 @@
 const listHelper = require("../utils/list_helper");
-const totalLikes = require("../utils/list_helper").totalLike;
+const totalLikes = require("../utils/list_helper").totalLikes;
+const favoriteBlog = require("../utils/list_helper").favoriteBlog;
 
 test("dummy returns one", () => {
   const blogs = [];
@@ -76,17 +77,75 @@ describe("total likes", () => {
   const noList = [];
 
   test("test multiple blog posts", () => {
-    const result = listHelper.totalLike(multipleLists);
+    const result = listHelper.totalLikes(multipleLists);
     expect(result).toBe(36);
   });
 
   test("test one blog post", () => {
-    const result = listHelper.totalLike(oneList);
+    const result = listHelper.totalLikes(oneList);
     expect(result).toBe(7);
   });
 
   test("test no blog posts", () => {
-    const result = listHelper.totalLike(noList);
+    const result = listHelper.totalLikes(noList);
     expect(result).toBe(0);
+  });
+});
+
+describe("favorite blog", () => {
+  const multiplePosts = [
+    {
+      title: "Voluptates sint asperiores",
+      author: "Madyson Osinski",
+      likes: 41,
+    },
+    { title: "Sit quae dicta", author: "Aleah Zboncak", likes: 55 },
+    { title: "Qui et consequatur", author: "Everette Bahringer", likes: 73 },
+    { title: "Eos voluptates eum", author: "Nina Nikolaus", likes: 33 },
+    { title: "Sint ipsam quia", author: "Jazmyn Jacobi", likes: 25 },
+  ];
+
+  const postsWithSameNumberOfLikes = [
+    {
+      title: "Voluptates sint asperiores",
+      author: "Madyson Osinski",
+      likes: 41,
+    },
+    { title: "Sit quae dicta", author: "Aleah Zboncak", likes: 41 },
+    { title: "Qui et consequatur", author: "Everette Bahringer", likes: 41 },
+  ];
+
+  const singlePost = [
+    {
+      title: "Voluptates sint asperiores",
+      author: "Madyson Osinski",
+      likes: 41,
+    },
+  ];
+
+  const noPosts = [];
+
+  test("test multiple posts", () => {
+    const result = favoriteBlog(multiplePosts);
+    expect(result).toBe(multiplePosts[2]);
+  });
+
+  test("test single posts", () => {
+    const result = favoriteBlog(singlePost);
+    expect(result).toBe(singlePost[0]);
+  });
+
+  test("test no posts", () => {
+    const result = favoriteBlog(noPosts);
+    expect(result).toBe(null);
+  });
+
+  test("test posts with same number of likes", () => {
+    const result = favoriteBlog(postsWithSameNumberOfLikes);
+    expect(result).toEqual({
+      title: expect.any(String),
+      author: expect.any(String),
+      likes: expect.any(Number),
+    });
   });
 });
