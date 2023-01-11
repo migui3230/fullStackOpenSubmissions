@@ -1,6 +1,7 @@
 const listHelper = require("../utils/list_helper");
 const totalLikes = require("../utils/list_helper").totalLikes;
 const favoriteBlog = require("../utils/list_helper").favoriteBlog;
+const mostBlogs = require("../utils/list_helper").mostBlogs;
 
 test("dummy returns one", () => {
   const blogs = [];
@@ -146,6 +147,51 @@ describe("favorite blog", () => {
       title: expect.any(String),
       author: expect.any(String),
       likes: expect.any(Number),
+    });
+  });
+});
+
+describe("mostBlogs", () => {
+  const multipleAuthors = [
+    { author: "John Doe", blogs: 12 },
+    { author: "Jane Smith", blogs: 15 },
+    { author: "Bob Johnson", blogs: 10 },
+    { author: "Emily Davis", blogs: 8 },
+    { author: "Michael Brown", blogs: 11 },
+    { author: "Sarah Wilson", blogs: 9 },
+  ];
+
+  const singleAuthor = [{ author: "John Doe", blogs: 12 }];
+
+  const authorsWithSameBlogs = [
+    { author: "John Doe", blogs: 12 },
+    { author: "Jane Smith", blogs: 12 },
+    { author: "Bob Johnson", blogs: 12 },
+    { author: "Emily Davis", blogs: 12 },
+  ];
+
+  const noAuthors = [];
+
+  test("test multiple authors", () => {
+    const result = mostBlogs(multipleAuthors);
+    expect(result).toEqual(multipleAuthors[1]);
+  });
+
+  test("test one author", () => {
+    const result = mostBlogs(singleAuthor);
+    expect(result).toEqual(singleAuthor[0]);
+  });
+
+  test("test no author", () => {
+    const result = mostBlogs(noAuthors);
+    expect(result).toEqual(null);
+  });
+
+  test("test authors with the same likes", () => {
+    const result = mostBlogs(authorsWithSameBlogs);
+    expect(result).toEqual({
+      author: expect.any(String),
+      blogs: expect.any(Number),
     });
   });
 });
