@@ -1,10 +1,3 @@
-/* 
-TODO:
-
-- create the mongo db
-- create scripts in the package json
-*/
-
 require("dotenv").config();
 const express = require("express");
 const app = express();
@@ -13,9 +6,14 @@ const mongoose = require("mongoose");
 const blogsRouter = require("./controllers/blogs");
 
 const mongoUrl = process.env.MONGODB_URL;
-mongoose.connect(mongoUrl).then(() => {
-  console.log("connected to db");
-});
+mongoose
+  .connect(mongoUrl)
+  .then(() => {
+    console.log("connected to db");
+  })
+  .catch((error) => {
+    console.log(error);
+  });
 
 app.use(cors());
 app.use(express.json());
