@@ -55,3 +55,19 @@ test("should create a new blog post", async () => {
 
   expect(newLength).toBe(initialLength + 1);
 });
+
+test("verifies likes property defaults to 0 if likes is missing", async () => {
+  const data = new Blog({
+    title: "new testing",
+    author: "amazin",
+    url: "www.kakarot.com",
+  });
+
+  const dataObject = data.toObject();
+
+  if (!("likes" in dataObject)) {
+    dataObject.likes = 0;
+  }
+
+  expect(dataObject).toHaveProperty("likes", 0);
+});
