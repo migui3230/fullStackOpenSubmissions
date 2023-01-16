@@ -69,3 +69,15 @@ test("verifies that the likes property is default to 0 when it isnt included in 
 
   expect(postRequest.body.likes).toBe(0);
 });
+
+test("test for missing url or title", async () => {
+  const blog = new Blog({
+    author: "troll",
+  });
+
+  const blogObject = blog.toObject();
+
+  const postRequest = await request(app).post("/api/blogs").send(blogObject);
+
+  expect(postRequest.status).toBe(400);
+});

@@ -14,6 +14,10 @@ blogsRouter.post("/api/blogs", (request, response) => {
     blog.likes = 0;
   }
 
+  if (!blog.title || !blog.url) {
+    response.status(400).end();
+  }
+
   blog.save().then((result) => {
     response.status(201).json(result);
   });
