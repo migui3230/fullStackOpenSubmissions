@@ -22,9 +22,6 @@ test("test unique identifier of the blog posts is _id", async () => {
 });
 
 test("should create a new blog post", async () => {
-  // TODO: expect that the length is increased by 1 compared to the initial state
-  // TODO: expect that the data input into the db is included in the new state
-
   const initialState = await request(app)
     .get("/api/blogs")
     .expect(200)
@@ -56,18 +53,19 @@ test("should create a new blog post", async () => {
   expect(newLength).toBe(initialLength + 1);
 });
 
-test("verifies likes property defaults to 0 if likes is missing", async () => {
-  const data = new Blog({
-    title: "new testing",
-    author: "amazin",
-    url: "www.kakarot.com",
+test("verifies that the likes property is default to 0 when it isnt included in the object", async () => {
+  const blog = new Blog({
+    title: "blog api test",
+    author: "MiggyS",
+    url: "www.thisiskewl.com",
   });
 
-  const dataObject = data.toObject();
+  const blogObject = blog.toObject();
 
-  if (!("likes" in dataObject)) {
-    dataObject.likes = 0;
-  }
+  const postRequest = await request(app)
+    .post("/api/blogs")
+    .send(blogObject)
+    .expect(201);
 
-  expect(dataObject).toHaveProperty("likes", 0);
+  expect(postRequest.body.likes).toBe(0);
 });
