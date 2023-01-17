@@ -15,12 +15,25 @@ blogsRouter.post("/api/blogs", (request, response) => {
   }
 
   if (!blog.title || !blog.url) {
-    response.status(400).end();
+    return response.status(400).end();
   }
 
   blog.save().then((result) => {
     response.status(201).json(result);
   });
+});
+
+// TODO: create route to delete a single blog post resource
+
+blogsRouter.delete("/api/blogs/:id", async (request, response) => {
+  const id = request.params.id;
+
+  try {
+    const doc = await Blog.findByIdAndDelete(id);
+    response.json(doc);
+  } catch (error) {
+    response.status(500).json({ message: error.message });
+  }
 });
 
 module.exports = blogsRouter;
