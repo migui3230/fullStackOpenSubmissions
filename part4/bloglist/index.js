@@ -4,6 +4,7 @@ const app = express();
 const cors = require("cors");
 const mongoose = require("mongoose");
 const blogsRouter = require("./controllers/blogs");
+const usersRouter = require("./controllers/users");
 
 const mongoUrl = process.env.MONGODB_URL;
 mongoose
@@ -18,6 +19,7 @@ mongoose
 app.use(cors());
 app.use(express.json());
 app.use(blogsRouter);
+app.use(usersRouter);
 
 const PORT = process.env.PORT;
 
